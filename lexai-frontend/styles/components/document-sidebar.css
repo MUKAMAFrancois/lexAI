@@ -1,0 +1,312 @@
+/* ========================================
+   Document Sidebar Component Styles
+   ======================================== */
+
+/* Sidebar Overlay (Mobile) */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-sticky);
+  transition: opacity var(--transition-normal);
+}
+
+@media (min-width: 1024px) {
+  .sidebar-overlay {
+    display: none;
+  }
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--color-slate-900);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-2xl);
+  z-index: var(--z-sticky);
+  transition: transform var(--transition-slow), width var(--transition-slow);
+  width: 20rem;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    position: static;
+    box-shadow: none;
+  }
+}
+
+.sidebar--open {
+  transform: translateX(0);
+  border-right: 1px solid var(--color-slate-700);
+}
+
+.sidebar--closed {
+  transform: translateX(-100%);
+}
+
+@media (min-width: 1024px) {
+  .sidebar--closed {
+    transform: translateX(0);
+    width: 0;
+    overflow: hidden;
+    border-right: none;
+  }
+}
+
+/* Sidebar Header */
+.sidebar__header {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-slate-700);
+}
+
+.sidebar__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-3);
+}
+
+.sidebar__title {
+  color: white;
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+}
+
+.sidebar__close-btn {
+  padding: 0.375rem;
+  border-radius: var(--radius-lg);
+  transition: background-color var(--transition-fast);
+  color: var(--color-slate-400);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sidebar__close-btn:hover {
+  background-color: var(--color-slate-800);
+  color: white;
+}
+
+.sidebar__close-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Storage Info */
+.sidebar__storage {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-slate-300);
+  margin-bottom: var(--spacing-2);
+}
+
+.sidebar__storage-value {
+  color: var(--color-primary-400);
+}
+
+.sidebar__storage-value--overlimit {
+  color: var(--color-danger-400);
+}
+
+.sidebar__progress-bar {
+  width: 100%;
+  background-color: var(--color-slate-700);
+  border-radius: var(--radius-full);
+  height: 0.5rem;
+}
+
+.sidebar__progress-fill {
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-500);
+  transition: width var(--transition-normal);
+}
+
+.sidebar__progress-fill--overlimit {
+  background-color: var(--color-danger-500);
+}
+
+/* Sidebar Content */
+.sidebar__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-4);
+}
+
+.sidebar__section {
+  margin-bottom: var(--spacing-6);
+}
+
+.sidebar__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-3);
+}
+
+.sidebar__section-title {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-slate-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar__add-btn {
+  cursor: pointer;
+  padding: 0.375rem;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar__add-btn:hover {
+  background-color: var(--color-slate-800);
+}
+
+.sidebar__add-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-slate-400);
+}
+
+.sidebar__add-btn:hover .sidebar__add-icon {
+  color: white;
+}
+
+.sidebar__hidden-input {
+  display: none;
+}
+
+/* File List */
+.sidebar__file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.sidebar__empty-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-slate-500);
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-4) 0;
+}
+
+/* File Item */
+.sidebar__file-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 0.625rem;
+  background-color: var(--color-slate-800);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-slate-700);
+  transition: border-color var(--transition-fast);
+}
+
+.sidebar__file-item:hover {
+  border-color: var(--color-primary-500);
+}
+
+.sidebar__file-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.sidebar__file-icon--policy {
+  color: var(--color-primary-400);
+}
+
+.sidebar__file-icon--contract {
+  color: var(--color-slate-300);
+}
+
+.sidebar__file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar__file-name {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar__file-size {
+  font-size: var(--font-size-xs);
+  color: var(--color-slate-400);
+}
+
+.sidebar__file-delete {
+  opacity: 0;
+  color: var(--color-slate-500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--transition-fast), color var(--transition-fast);
+}
+
+.sidebar__file-item:hover .sidebar__file-delete {
+  opacity: 1;
+}
+
+.sidebar__file-delete:hover {
+  color: #ef4444;
+}
+
+.sidebar__file-delete:hover .sidebar__file-delete-icon {
+  color: #ef4444;
+}
+
+.sidebar__file-delete-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Sidebar Footer */
+.sidebar__footer {
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--color-slate-700);
+}
+
+.sidebar__run-btn {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-primary-600);
+  color: white;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  box-shadow: var(--shadow-lg);
+  transition: background-color var(--transition-fast);
+  border: none;
+  cursor: pointer;
+}
+
+.sidebar__run-btn:hover:not(:disabled) {
+  background-color: var(--color-primary-700);
+}
+
+.sidebar__run-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sidebar__run-icon {
+  width: 1rem;
+  height: 1rem;
+}

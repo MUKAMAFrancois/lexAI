@@ -1,0 +1,184 @@
+/* ========================================
+   Page Layout Styles
+   ======================================== */
+
+/* Main App Container */
+.app {
+  min-height: 100vh;
+  background-color: var(--color-slate-50);
+  font-family: var(--font-sans);
+  color: var(--color-slate-900);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ----------------------------------------
+   Navbar
+   ---------------------------------------- */
+.navbar {
+  background-color: white;
+  border-bottom: 1px solid var(--color-slate-200);
+  padding: var(--spacing-4) var(--spacing-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-overlay);
+  box-shadow: var(--shadow-sm);
+  height: 5rem;
+}
+
+@media (min-width: 640px) {
+  .navbar {
+    padding-left: var(--spacing-6);
+    padding-right: var(--spacing-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .navbar {
+    padding-left: var(--spacing-8);
+    padding-right: var(--spacing-8);
+  }
+}
+
+.navbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.navbar__menu-btn {
+  padding: var(--spacing-2);
+  margin-left: calc(-1 * var(--spacing-2));
+  color: var(--color-slate-600);
+  border-radius: var(--radius-lg);
+  transition: background-color var(--transition-fast);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.navbar__menu-btn:hover {
+  background-color: var(--color-slate-100);
+}
+
+.navbar__menu-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.navbar__logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--color-primary-600);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--shadow-lg), 0 4px 6px -4px rgba(37, 99, 235, 0.3);
+}
+
+.navbar__logo-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.navbar__brand {
+  font-weight: 700;
+  font-size: var(--font-size-xl);
+  letter-spacing: -0.025em;
+  color: var(--color-slate-900);
+}
+
+.navbar__back-btn {
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: white;
+  border: 1px solid var(--color-slate-300);
+  color: var(--color-slate-700);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  box-shadow: var(--shadow-sm);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.navbar__back-btn:hover {
+  background-color: var(--color-slate-50);
+  border-color: var(--color-slate-400);
+  box-shadow: var(--shadow-md);
+}
+
+.navbar__back-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.navbar__back-text {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .navbar__back-text {
+    display: inline;
+  }
+}
+
+/* ----------------------------------------
+   Body Content
+   ---------------------------------------- */
+.body {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--spacing-6);
+}
+
+/* ----------------------------------------
+   Workspace Layout
+   ---------------------------------------- */
+.workspace {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: var(--spacing-6);
+  max-width: 100rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.workspace__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  min-width: 0;
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--color-slate-200);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin: 0 var(--spacing-4);
+}
+
+@media (min-width: 640px) {
+  .workspace__main {
+    margin: 0 var(--spacing-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .workspace__main {
+    margin: 0 var(--spacing-8);
+  }
+  
+  .workspace__main--sidebar-open {
+    margin-left: var(--spacing-6);
+  }
+}

@@ -1,0 +1,111 @@
+/* ========================================
+   Upload Zone Component Styles
+   ======================================== */
+
+.upload-zone {
+  border: 2px dashed var(--color-slate-300);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-8);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.upload-zone:hover {
+  border-color: var(--color-slate-400);
+  background-color: var(--color-slate-50);
+}
+
+.upload-zone--active {
+  border-color: var(--color-primary-500);
+  background-color: var(--color-primary-50);
+}
+
+.upload-zone__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.upload-zone__icon-wrapper {
+  padding: var(--spacing-3);
+  background-color: var(--color-slate-100);
+  border-radius: var(--radius-full);
+}
+
+.upload-zone__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-slate-600);
+}
+
+.upload-zone__label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-slate-700);
+}
+
+.upload-zone__hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-slate-500);
+}
+
+/* File Selected State */
+.upload-zone--selected {
+  padding: var(--spacing-4);
+  border: 2px solid var(--color-success-200);
+  background-color: var(--color-success-50);
+  border-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upload-zone__file-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.upload-zone__file-icon-wrapper {
+  padding: var(--spacing-2);
+  background-color: var(--color-success-100);
+  border-radius: var(--radius-lg);
+}
+
+.upload-zone__file-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-success-700);
+}
+
+.upload-zone__file-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-success-900);
+}
+
+.upload-zone__file-size {
+  font-size: var(--font-size-xs);
+  color: var(--color-success-600);
+}
+
+.upload-zone__clear-btn {
+  padding: var(--spacing-1);
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.upload-zone__clear-btn:hover {
+  background-color: var(--color-success-200);
+}
+
+.upload-zone__clear-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-success-700);
+}

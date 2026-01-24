@@ -1,0 +1,33 @@
+/* ========================================
+   Card Component Styles
+   ======================================== */
+
+.card {
+  background-color: white;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-slate-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.card--hoverable {
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+}
+
+.card--hoverable:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card__header {
+  padding: var(--spacing-4) var(--spacing-6);
+  border-bottom: 1px solid var(--color-slate-200);
+}
+
+.card__body {
+  padding: var(--spacing-4) var(--spacing-6);
+}
+
+.card__footer {
+  padding: var(--spacing-4) var(--spacing-6);
+  border-top: 1px solid var(--color-slate-200);
+  background-color: var(--color-slate-50);
+}
