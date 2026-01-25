@@ -1,5 +1,6 @@
 // src/lib/api.ts
 import axios from 'axios';
+import { AuditResponse } from '@/types';
 
 // Create a configured instance of Axios
 export const api = axios.create({
@@ -15,6 +16,34 @@ export const uploadAuditFiles = async (policy: File, contract: File) => {
 
   // We use the generic <AuditResponse> to tell TypeScript what comes back
   const response = await api.post<AuditResponse>('/audit-contract', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  
+  return response.data;
+};
+
+// Helper function to send chat messages (text or audio)
+export const sendChatMessage = async (
+  contextText: string,
+  history: Array<{ role: string; content: string }> = [],
+  message?: string,
+  audioFile?: Blob
+) => {
+  const formData = new FormData();
+  formData.append('context_text', contextText);
+  formData.append('history', JSON.stringify(history));
+  
+  if (message) {
+    formData.append('message', message);
+  }
+  
+  if (audioFile) {
+    formData.append('audio_file', audioFile, 'recording.webm');
+  }
+
+  const response = await api.post<{ role: string; content: string }>('/chat', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

@@ -3,7 +3,7 @@ from app.services.pdf_service import extract_text_from_pdf
 from app.services.llm_service import analyze_contract_with_gemini
 from app.schemas.audit import AuditResponse
 
-router = APIRouter()
+router = APIRouter(tags=["Contract Audit"])
 
 @router.post("/audit-contract", response_model=AuditResponse)
 async def audit_contract(

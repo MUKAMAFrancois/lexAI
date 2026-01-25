@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import { FileText, Trash2, Plus, ShieldCheck, Loader2, X, Menu } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { FileText, Trash2, Plus, ShieldCheck, Loader2, X, Menu, GripVertical } from 'lucide-react';
 import '@/styles/components/document-sidebar.css';
 
 interface DocumentSidebarProps {
@@ -33,6 +33,35 @@ export const DocumentSidebar = ({
   totalSizeMB,
   isOverLimit
 }: DocumentSidebarProps) => {
+  const [sidebarWidth, setSidebarWidth] = useState(320);
+  const [isResizing, setIsResizing] = useState(false);
+  const sidebarRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      const newWidth = Math.max(200, Math.min(500, e.clientX));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing]);
   return (
     <>
       {/* Sidebar Overlay (Mobile) */}
@@ -41,7 +70,19 @@ export const DocumentSidebar = ({
       )}
 
       {/* LEFT SIDEBAR - Content Management */}
-      <aside className={`sidebar ${isOpen ? 'sidebar--open' : 'sidebar--closed'}`}>
+      <aside 
+        ref={sidebarRef}
+        className={`sidebar ${isOpen ? 'sidebar--open' : 'sidebar--closed'}`}
+        style={{ width: isOpen ? `${sidebarWidth}px` : undefined }}
+      >
+        
+        {/* Resize Handle */}
+        <div 
+          className={`sidebar__resize-handle ${isResizing ? 'sidebar__resize-handle--active' : ''}`}
+          onMouseDown={() => setIsResizing(true)}
+        >
+          <GripVertical size={12} />
+        </div>
         
         {/* Sidebar Header */}
         <div className="sidebar__header">
@@ -159,7 +200,7 @@ export const DocumentSidebar = ({
           >
             {isLoading ? (
               <>
-                <Loader2 className="sidebar__run-icon animate-spin" /> Analyzing...
+                <Loader2 className="sidebar__run-icon animate-spin" /> Please wait...
               </>
             ) : (
               <>

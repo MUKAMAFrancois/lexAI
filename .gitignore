@@ -14,7 +14,7 @@
 
 # production
 /build
-
+deploy.md
 # misc
 .DS_Store
 *.pem

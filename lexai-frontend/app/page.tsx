@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { WelcomeScreen } from '@/components/dashboard/WelcomeScreen';
 import { DocumentSidebar } from '@/components/dashboard/DocumentSidebar';
 import { ChatInterface } from '@/components/dashboard/ChatInterface';
 import { ChatInput } from '@/components/dashboard/ChatInput';
 import { AuditResponse } from '@/types';
 import { ShieldCheck, Menu, X, ArrowLeft } from 'lucide-react';
+import { uploadAuditFiles, sendChatMessage } from '@/lib/api';
 import '@/styles/layout.css';
 
 export default function Home() {
@@ -14,11 +15,16 @@ export default function Home() {
   const [policyFiles, setPolicyFiles] = useState<File[]>([]);
   const [contractFiles, setContractFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [auditResult, setAuditResult] = useState<AuditResponse | null>(null);
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
+  // Voice recording refs
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const totalSizeMB = useMemo(() => {
     const allFiles = [...policyFiles, ...contractFiles];
@@ -58,78 +64,151 @@ export default function Home() {
 
   const handleAudit = async () => {
     if (policyFiles.length === 0 || contractFiles.length === 0) return;
+    
+    // Check for duplicate documents
+    const hasDuplicates = policyFiles.some(policyFile => 
+      contractFiles.some(contractFile => 
+        policyFile.name === contractFile.name && 
+        policyFile.size === contractFile.size &&
+        policyFile.lastModified === contractFile.lastModified
+      )
+    );
+    
+    if (hasDuplicates) {
+      alert("⚠️ Duplicate Document Detected\n\nYou've uploaded the same document for both Policy and Contract. Please ensure you upload different documents.");
+      return;
+    }
+    
     setIsLoading(true);
+    setError(null);
     setChatHistory([]); 
     
-    // Simulate a brief loading delay for realism
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Mock data for demonstration (no backend required)
-    const mockData: AuditResponse = {
-      audit_summary: {
-        risk_score: 65,
-        critical_violations: 2,
-        total_clauses_checked: 5
-      },
-      clause_analysis: [
-        {
-          clause_name: "Payment Terms",
-          contract_text: "Payment is due upon receipt of invoice.",
-          policy_rule: "All payments must be Net 30 or greater.",
-          status: "CRITICAL",
-          remediation_suggestion: "Change payment terms to Net 30."
-        },
-        {
-          clause_name: "Liability Cap",
-          contract_text: "Liability is limited to the contract value.",
-          policy_rule: "Liability cap must not exceed 2x annual contract value.",
-          status: "PASS"
-        },
-        {
-          clause_name: "Termination Clause",
-          contract_text: "Either party may terminate with 7 days notice.",
-          policy_rule: "Minimum 30 days notice required for termination.",
-          status: "WARNING",
-          remediation_suggestion: "Extend notice period to at least 30 days."
-        },
-        {
-          clause_name: "Intellectual Property",
-          contract_text: "All IP created during engagement belongs to the client.",
-          policy_rule: "IP ownership must be clearly defined with mutual rights.",
-          status: "CRITICAL",
-          remediation_suggestion: "Add clause for shared IP rights or licensing terms."
-        },
-        {
-          clause_name: "Confidentiality",
-          contract_text: "Both parties agree to maintain confidentiality for 2 years.",
-          policy_rule: "Confidentiality period must be at least 2 years.",
-          status: "PASS"
-        }
-      ]
-    };
-    
-    setAuditResult(mockData);
-    setChatHistory([{
-      role: 'assistant',
-      content: `Analysis complete! Found ${mockData.audit_summary.critical_violations} critical violations with a risk score of ${mockData.audit_summary.risk_score}/100. Ask me anything about the contract.`
-    }]);
-    setIsLoading(false);
+    try {
+        // Call real backend API
+        const result = await uploadAuditFiles(policyFiles[0], contractFiles[0]);
+        
+        setAuditResult(result);
+        setChatHistory([{
+          role: 'assistant',
+          content: `Analysis complete! Found ${result.audit_summary.critical_violations} critical violations with a risk score of ${result.audit_summary.risk_score}/100. Ask me anything about the contract.`
+        }]);
+    } catch (err) {
+        console.error("Analysis failed:", err);
+        setError("Oops, Something went Wrong");
+        setAuditResult(null);
+    } finally {
+        setIsLoading(false);
+    }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!chatMessage.trim()) return;
-    setChatHistory(prev => [...prev, { role: 'user', content: chatMessage }]);
-    setTimeout(() => {
+    
+    const userMessage = chatMessage;
+    setChatMessage('');
+    setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
+    
+    try {
+      // Build context from audit result
+      const contextText = auditResult 
+        ? JSON.stringify(auditResult) 
+        : 'No contract analysis available yet.';
+      
+      // Call real backend chat API with text message
+      const response = await sendChatMessage(contextText, chatHistory, userMessage);
+      
       setChatHistory(prev => [...prev, { 
         role: 'assistant', 
-        content: 'This is a placeholder response. Connect this to your AI backend to get real contract analysis answers.' 
+        content: response.content 
       }]);
-    }, 500);
-    setChatMessage('');
+    } catch (err) {
+      console.error('Chat failed:', err);
+      setChatHistory(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'Sorry, I encountered an error. Please try again.' 
+      }]);
+    }
   };
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
+  const toggleRecording = async () => {
+    if (isRecording) {
+      // Stop recording
+      console.log('Stopping recording...');
+      setIsRecording(false);
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
+    } else {
+      // Start recording
+      try {
+        console.log('Requesting microphone access...');
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log('Microphone access granted, starting MediaRecorder...');
+        
+        const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+        mediaRecorderRef.current = mediaRecorder;
+        audioChunksRef.current = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          console.log('Audio chunk received:', event.data.size, 'bytes');
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          console.log('MediaRecorder stopped, processing audio...');
+          console.log('Total chunks:', audioChunksRef.current.length);
+          
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+          console.log('Audio blob created:', audioBlob.size, 'bytes');
+          
+          // Stop all tracks
+          stream.getTracks().forEach(track => track.stop());
+          
+          if (audioBlob.size === 0) {
+            console.error('Audio blob is empty!');
+            setChatHistory(prev => [...prev, { 
+              role: 'assistant', 
+              content: 'No audio was recorded. Please try again and speak into your microphone.' 
+            }]);
+            return;
+          }
+          
+          // Send audio to backend
+          setChatHistory(prev => [...prev, { role: 'user', content: '🎤 Voice message sent...' }]);
+          
+          try {
+            const contextText = auditResult 
+              ? JSON.stringify(auditResult) 
+              : 'No contract analysis available yet.';
+            
+            console.log('Sending audio to backend...');
+            const response = await sendChatMessage(contextText, chatHistory, undefined, audioBlob);
+            console.log('Backend response received:', response);
+            
+            setChatHistory(prev => [...prev, { 
+              role: 'assistant', 
+              content: response.content 
+            }]);
+          } catch (err) {
+            console.error('Voice chat failed:', err);
+            setChatHistory(prev => [...prev, { 
+              role: 'assistant', 
+              content: 'Sorry, I couldn\'t process your voice message. Please try again.' 
+            }]);
+          }
+        };
+
+        // Request data every 250ms to ensure we get chunks
+        mediaRecorder.start(250);
+        setIsRecording(true);
+        console.log('Recording started!');
+      } catch (err) {
+        console.error('Microphone access denied:', err);
+        alert('Please allow microphone access to use voice input.');
+      }
+    }
   };
 
   return (
@@ -193,6 +272,36 @@ export default function Home() {
                 isLoading={isLoading}
                 auditResult={auditResult}
                 setAuditResult={setAuditResult}
+                error={error}
+                onUpdateMessage={async (index, newContent) => {
+                  // 1. Slice history to keep messages BEFORE the edited one
+                  const prevHistory = chatHistory.slice(0, index);
+                  
+                  // 2. Add the edited message
+                  const updatedHistory = [...prevHistory, { role: 'user' as const, content: newContent }];
+                  setChatHistory(updatedHistory);
+                  
+                  // 3. Trigger new AI response based on updated history
+                  try {
+                    const contextText = auditResult 
+                      ? JSON.stringify(auditResult) 
+                      : 'No contract analysis available yet.';
+                    
+                    // Add loading state placeholder if needed, or just let the API call resolve
+                    const response = await sendChatMessage(contextText, updatedHistory, newContent);
+                    
+                    setChatHistory(prev => [...prev, { 
+                      role: 'assistant', 
+                      content: response.content 
+                    }]);
+                  } catch (err) {
+                    console.error('Update chat failed:', err);
+                    setChatHistory(prev => [...prev, { 
+                      role: 'assistant', 
+                      content: 'Sorry, I encounted an error while updating. Please try again.' 
+                    }]);
+                  }
+                }}
               />
               
               <ChatInput 

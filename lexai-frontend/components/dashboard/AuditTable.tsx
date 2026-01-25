@@ -43,10 +43,21 @@ const ExplanationModal = ({
 }) => {
   const isCritical = clause.status === 'CRITICAL';
   const statusClass = isCritical ? 'critical' : 'warning';
+  const [copiedSection, setCopiedSection] = useState<string | null>(null);
+
+  const handleCopy = async (text: string, section: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedSection(section);
+      setTimeout(() => setCopiedSection(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className={`modal__header modal__header--${statusClass}`}>
@@ -68,15 +79,24 @@ const ExplanationModal = ({
           </button>
         </div>
 
-        {/* Content - Two Sections */}
+        {/* Content - Scrollable Body */}
         <div className="modal__body">
           
           {/* Section 1: What Went Wrong */}
           <div className="modal__section">
-            <h4 className="modal__section-title">
-              <span className={`modal__section-dot modal__section-dot--${statusClass}`}></span>
-              What Went Wrong
-            </h4>
+            <div className="modal__section-header">
+              <h4 className="modal__section-title">
+                <span className={`modal__section-dot modal__section-dot--${statusClass}`}></span>
+                What Went Wrong
+              </h4>
+              <button 
+                onClick={() => handleCopy(clause.policy_rule, 'policy')}
+                className="modal__copy-btn"
+                title="Copy to clipboard"
+              >
+                {copiedSection === 'policy' ? '✓ Copied' : 'Copy'}
+              </button>
+            </div>
             <div className={`modal__section-content modal__section-content--${statusClass}`}>
               <p className={`modal__section-text modal__section-text--${statusClass}`}>
                 {clause.policy_rule}
@@ -86,10 +106,19 @@ const ExplanationModal = ({
 
           {/* Section 2: Advice */}
           <div className="modal__section">
-            <h4 className="modal__section-title">
-              <span className="modal__section-dot modal__section-dot--advice"></span>
-              Advice
-            </h4>
+            <div className="modal__section-header">
+              <h4 className="modal__section-title">
+                <span className="modal__section-dot modal__section-dot--advice"></span>
+                Advice
+              </h4>
+              <button 
+                onClick={() => handleCopy(clause.remediation_suggestion || 'No specific remediation advice available.', 'advice')}
+                className="modal__copy-btn"
+                title="Copy to clipboard"
+              >
+                {copiedSection === 'advice' ? '✓ Copied' : 'Copy'}
+              </button>
+            </div>
             <div className="modal__section-content modal__section-content--advice">
               <p className="modal__section-text modal__section-text--advice">
                 {clause.remediation_suggestion || "No specific remediation advice available yet. Consult with your legal team for guidance on this clause."}

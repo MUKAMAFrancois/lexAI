@@ -25,6 +25,12 @@ def analyze_contract_with_gemini(policy_text: str, contract_text: str) -> dict:
     
     TASK:
     Compare the CONTRACT against the POLICY. Identify clauses that violate the policy.
+
+    ROBUSTNESS INSTRUCTION:
+    It is possible that the user accidentally swapped the POLICY and CONTRACT inputs. 
+    - Verify which text represents the "General Policy/Guidelines" and which is the "Specific Agreement/Contract".
+    - If they appear swapped, implicitly swap them back for your analysis. 
+    - ALWAYS audit the specific agreement against the general policy rules.
     
     OUTPUT FORMAT (JSON ONLY):
     Return a JSON object that strictly matches this structure:
@@ -48,7 +54,7 @@ def analyze_contract_with_gemini(policy_text: str, contract_text: str) -> dict:
     
     # Use 1.5 Flash
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash",
         contents=prompt,
         config=types.GenerateContentConfig(response_mime_type="application/json")
     )
@@ -110,7 +116,7 @@ def chat_with_gemini(context_text: str, chat_history: list, user_text: str = Non
     ))
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash",
         contents=contents
     )
     return response.text

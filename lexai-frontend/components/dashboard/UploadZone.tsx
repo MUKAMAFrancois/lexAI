@@ -29,7 +29,6 @@ export const UploadZone = ({ label, onFileSelect, selectedFile, onClear }: Uploa
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
 
-  // If a file is already selected, show the "File Card" instead of the drop zone
   if (selectedFile) {
     return (
       <div className="upload-zone upload-zone--selected">
@@ -49,7 +48,6 @@ export const UploadZone = ({ label, onFileSelect, selectedFile, onClear }: Uploa
     );
   }
 
-  // Otherwise, show the Drag & Drop Zone
   return (
     <div 
       {...getRootProps()} 
