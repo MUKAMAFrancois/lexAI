@@ -20,4 +20,15 @@ async def audit_contract(
     # 2. Analyze with Gemini
     analysis_result = analyze_contract_with_gemini(policy_text, contract_text)
     
+    # 3. Check for validation errors (unrelated documents)
+    if "error_type" in analysis_result:
+        if analysis_result["error_type"] == "UNRELATED_DOCUMENTS":
+            raise HTTPException(
+                status_code=422, 
+                detail={
+                    "error_type": "UNRELATED_DOCUMENTS",
+                    "message": analysis_result.get("error", "The uploaded documents are not relevant for contract auditing.")
+                }
+            )
+    
     return analysis_result

@@ -4,8 +4,8 @@ import { AuditResponse } from '@/types';
 
 // Create a configured instance of Axios
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000', // when running locally we use port 8000
-  timeout: 60000, // 60 seconds (AI takes time to think)
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 180000, // 3 minutes (AI takes time to think)
 });
 
 // Helper function to upload the two PDFs

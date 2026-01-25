@@ -5,6 +5,7 @@ import { WelcomeScreen } from '@/components/dashboard/WelcomeScreen';
 import { DocumentSidebar } from '@/components/dashboard/DocumentSidebar';
 import { ChatInterface } from '@/components/dashboard/ChatInterface';
 import { ChatInput } from '@/components/dashboard/ChatInput';
+import { Modal } from '@/components/ui/Modal';
 import { AuditResponse } from '@/types';
 import { ShieldCheck, Menu, X, ArrowLeft } from 'lucide-react';
 import { uploadAuditFiles, sendChatMessage } from '@/lib/api';
@@ -21,6 +22,7 @@ export default function Home() {
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [modalInfo, setModalInfo] = useState<{ isOpen: boolean; title: string; message: string }>({ isOpen: false, title: '', message: '' });
   
   // Voice recording refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -92,9 +94,23 @@ export default function Home() {
           role: 'assistant',
           content: `Analysis complete! Found ${result.audit_summary.critical_violations} critical violations with a risk score of ${result.audit_summary.risk_score}/100. Ask me anything about the contract.`
         }]);
-    } catch (err) {
-        console.error("Analysis failed:", err);
-        setError("Oops, Something went Wrong");
+    } catch (err: unknown) {
+        // Check if this is an axios error with a response
+        const axiosError = err as { response?: { status?: number; data?: { detail?: { error_type?: string; message?: string } } } };
+        
+        if (axiosError.response?.status === 422 && 
+            axiosError.response?.data?.detail?.error_type === "UNRELATED_DOCUMENTS") {
+          // Show modal for unrelated documents (expected behavior, no console error)
+          setModalInfo({
+            isOpen: true,
+            title: "Invalid Documents",
+            message: axiosError.response.data.detail.message || "The uploaded documents do not appear to be internal policies or contracts."
+          });
+        } else {
+          // Unexpected error - log it
+          console.error("Analysis failed:", err);
+          setError("Oops, Something went Wrong");
+        }
         setAuditResult(null);
     } finally {
         setIsLoading(false);
@@ -316,6 +332,15 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Error Modal for Unrelated Documents */}
+      <Modal
+        isOpen={modalInfo.isOpen}
+        onClose={() => setModalInfo({ isOpen: false, title: '', message: '' })}
+        title={modalInfo.title}
+        message={modalInfo.message}
+        type="warning"
+      />
     </main>
   );
 }

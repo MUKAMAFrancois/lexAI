@@ -23,7 +23,19 @@ def analyze_contract_with_gemini(policy_text: str, contract_text: str) -> dict:
     2. CONTRACT TO AUDIT:
     {contract_text}
     
-    TASK:
+    VALIDATION STEP (DO THIS FIRST):
+    Before performing any analysis, verify that BOTH documents are related to legal/business context:
+    - Document 1 should be an internal policy, guidelines, regulations, or legal framework.
+    - Document 2 should be a contract, agreement, or legal document to be audited.
+    
+    If EITHER document appears to be completely unrelated to legal/business context (e.g., recipes, personal letters, education materials, love letters, emails, news articles, other topics apart from legal/business context, 
+    technical manuals about unrelated topics, random text, etc.), return this JSON immediately:
+    {{
+        "error": "The uploaded documents do not appear to be internal policies or contracts. Please upload relevant legal documents.",
+        "error_type": "UNRELATED_DOCUMENTS"
+    }}
+    
+    TASK (only if documents are valid):
     Compare the CONTRACT against the POLICY. Identify clauses that violate the policy.
 
     ROBUSTNESS INSTRUCTION:
@@ -52,7 +64,7 @@ def analyze_contract_with_gemini(policy_text: str, contract_text: str) -> dict:
     }}
     """
     
-    # Use 1.5 Flash
+    # Use 2.5 Flash
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt,
@@ -81,12 +93,7 @@ def chat_with_gemini(context_text: str, chat_history: list, user_text: str = Non
     Answer the user's question based strictly on the context above.
     If the user sends audio, transcribe it in your thought process but answer the question directly.
     """
-    
-    # In V2 SDK, system instruction is passed in config, but we can also prepend it to prompts if we want
-    # For chat, best to just include it as context or first message
-    
-    # Construct message history for the new SDK
-    # New SDK structure is simplified
+
     
     # 1. Add System/Context
     contents.append(types.Content(
