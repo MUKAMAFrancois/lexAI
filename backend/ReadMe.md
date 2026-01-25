@@ -10,6 +10,7 @@ pip install fastapi uvicorn python-multipart google-genai pypdf pydantic python-
 
 # 2. folder structure
 
+```text
 backend/
 ├── app/
 │   ├── __init__.py
@@ -30,6 +31,7 @@ backend/
 ├── .env                     # Store your GOOGLE_API_KEY here
 ├── requirements.txt         # Python dependencies
 └── run.py                   # Simple script to start the server
+```
 
 # 3. get api key 
 - get it here: https://aistudio.google.com/api-keys
