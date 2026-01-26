@@ -29,7 +29,7 @@ def analyze_contract_with_gemini(policy_text: str, contract_text: str) -> dict:
     - Document 2 should be a contract, agreement, or legal document to be audited.
     
     If EITHER document appears to be completely unrelated to legal/business context (e.g., recipes, personal letters, education materials, love letters, emails, news articles, other topics apart from legal/business context, 
-    technical manuals about unrelated topics, random text, etc.), return this JSON immediately:
+    technical manuals about unrelated topics, random text, etc.), EVEN IF one of the documents is related to legal/business context and another is not related to legal/business context, return this JSON immediately:
     {{
         "error": "The uploaded documents do not appear to be internal policies or contracts. Please upload relevant legal documents.",
         "error_type": "UNRELATED_DOCUMENTS"
