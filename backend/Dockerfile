@@ -15,5 +15,4 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy the entire app package to maintain structure
 COPY app/ ./app/
 
-# Run uvicorn with app.main:app to match the package structure
 CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}
