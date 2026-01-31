@@ -12,6 +12,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-COPY app/ .
+# Copy the entire app package to maintain structure
+COPY app/ ./app/
 
-CMD exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+# Run uvicorn with app.main:app to match the package structure
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}

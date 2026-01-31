@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from services.pdf_service import extract_text_from_pdf
-from services.llm_service import analyze_contract_with_gemini
-from schemas.audit import AuditResponse
+from app.services.pdf_service import extract_text_from_pdf
+from app.services.llm_service import analyze_contract_with_gemini
+from app.schemas.audit import AuditResponse
 
 router = APIRouter(tags=["Contract Audit"])
 

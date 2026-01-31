@@ -1,7 +1,7 @@
 # backend/app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import audit, chat
+from app.routers import audit, chat
 
 app = FastAPI(
     title="LexAI API",
