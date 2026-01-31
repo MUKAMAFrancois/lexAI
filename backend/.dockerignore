@@ -1,0 +1,36 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Environment files (secrets should NOT be in the image)
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Tests (not needed in production)
+tests/
+
+# Documentation
+ReadMe.md
+*.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local run script (not needed in container)
+run.py
