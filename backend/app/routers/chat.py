@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from typing import Optional, List
-from app.services.llm_service import chat_with_gemini
+from services.llm_service import chat_with_gemini
 
 router = APIRouter(tags=["Chat Assistant"])
 
